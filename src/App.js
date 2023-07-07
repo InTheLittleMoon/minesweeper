@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
+
+//components
 import Board from "./components/board/Board";
+import GameOverPopup from "./components/gameOverMessage/GameOverPopup";
 
 function App() {
+  const [gameOverMessage, setGameOverMessage] = useState(true);
+  const [winStatus, setWinStatus] = useState(false);
   return (
     <div className="game-main-container">
-      <Board />
+      <Board
+        setGameOverMessage={setGameOverMessage}
+        setWinStatus={setWinStatus}
+      />
+      {gameOverMessage && <GameOverPopup winStatus={winStatus} />}
     </div>
   );
 }
@@ -20,6 +29,4 @@ export default App;
 //mine: ends game
 
 //right click(context menu):
-//needs to 'mark' a tile
 //marked tile needs to decrement total mines counter that displays how many mines are out on the board
-//needs to 'unmark' only tiles that are 'marked'

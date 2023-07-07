@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-import "./board.css";
+import "./Board.css";
 
 //components
 import createBoard from "../../gameLogic";
-import Cell from "../cells/cell";
-import GameOverPopup from "../gameOverMessage/GameOverPopup";
+import Cell from "../cells/Cell";
 
-export default function Board() {
+export default function Board({ setGameOverMessage, setWinStatus }) {
   //states
   const [grid, setGrid] = useState([]);
   const [gamePlayable, setGamePlayable] = useState(true);
-  const [gameOverMessage, setGameOverMessage] = useState(false);
 
   //should start game at launch
   useEffect(() => {
@@ -22,6 +20,11 @@ export default function Board() {
   //should 'mark' cell when right clicked
   const flagTile = (event, x, y) => {
     event.preventDefault();
+    //checks if game is still playable
+    if (gamePlayable === false) {
+      return;
+    }
+
     //alternates between true and false so you can mark / unmark
     setGrid((prevGrid) => {
       let newGrid = JSON.parse(JSON.stringify(prevGrid));
@@ -34,6 +37,11 @@ export default function Board() {
 
   //should deal with left click, changing tile to correct 'mine', 'empty', or 'num' value
   const revealTile = (x, y) => {
+    //checks if game is still playable
+    if (gamePlayable === false) {
+      return;
+    }
+
     setGrid((prevGrid) => {
       let newGrid = JSON.parse(JSON.stringify(prevGrid));
       newGrid[x][y].revealed = true;
@@ -46,6 +54,7 @@ export default function Board() {
   useEffect(() => {
     if (gamePlayable === false) {
       setGameOverMessage(true);
+      setWinStatus(true);
     }
 
     return;
@@ -64,7 +73,6 @@ export default function Board() {
           );
         })}
       </div>
-      {gameOverMessage === true && <GameOverPopup/> }
     );
   });
 }

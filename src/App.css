@@ -4,10 +4,8 @@
 }
 
 body {
-  display: flex;
-  justify-content: center;
-}
-
-.game-main-container {
-  margin-top: 10%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
