@@ -1,14 +1,20 @@
 import React from "react";
-import "./cell.css";
+import "./Cell.css";
 
-export default function Cell({ tileData, flagTile }) {
+export default function Cell({ tileData, flagTile, revealTile }) {
   return (
     <div
       className="cell"
-      onContextMenu={(event) => flagTile(event, tileData.x, tileData.y)}
-      onClick={() => console.log(tileData)}
+      onContextMenu={(event) => {
+        flagTile(event, tileData.x, tileData.y);
+        console.log(tileData);
+      }}
+      onClick={() => {
+        revealTile(tileData.x, tileData.y);
+        console.log(tileData);
+      }}
     >
-      {tileData.value}
+      {tileData.revealed !== false && tileData.value !== 0 && tileData.value}
     </div>
   );
 }
