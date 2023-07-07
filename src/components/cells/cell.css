@@ -1,0 +1,12 @@
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 5vh;
+  height: 5vh;
+  border: 1px solid black;
+}
+
+.cell:hover {
+  cursor: pointer;
+}
