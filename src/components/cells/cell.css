@@ -5,8 +5,26 @@
   width: 5vh;
   height: 5vh;
   border: 1px solid black;
+  font-weight: bold;
+  font-size: 150%;
+}
+
+.cell img {
+  height: 3vh;
 }
 
 .cell:hover {
   cursor: pointer;
+}
+
+.revealedBlank {
+  background-color: grey;
+}
+
+.revealedNum {
+  background-color: green;
+}
+
+.flaggedTile {
+  background-color: yellow;
 }

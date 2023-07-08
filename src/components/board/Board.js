@@ -4,17 +4,24 @@ import "./Board.css";
 //components
 import createBoard from "../../gameLogic";
 import Cell from "../cells/Cell";
+import revealLogic from "../../revealLogic";
 
 export default function Board({ setGameOverMessage, setWinStatus }) {
   //states
   const [grid, setGrid] = useState([]);
   const [gamePlayable, setGamePlayable] = useState(true);
+  const [nonMineTiles, setNonMineTiles] = useState(0);
 
   //should start game at launch
   useEffect(() => {
-    const newBoard = createBoard(5, 5, 5);
+    const newBoard = createBoard(5, 5, 1);
     console.log(newBoard);
+
+    //should have same values as newBoard args
+    setNonMineTiles(5 * 5 - 1);
+    console.log(nonMineTiles);
     setGrid(newBoard.board);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //should 'mark' cell when right clicked
@@ -31,8 +38,6 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
       newGrid[x][y] = { ...newGrid[x][y], flagged: !newGrid[x][y].flagged };
       return newGrid;
     });
-
-    console.log(grid);
   };
 
   //should deal with left click, changing tile to correct 'mine', 'empty', or 'num' value
@@ -48,17 +53,31 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
       return newGrid;
     });
 
-    console.log(grid);
-  };
-
-  useEffect(() => {
-    if (gamePlayable === false) {
-      setGameOverMessage(true);
-      setWinStatus(true);
+    //only if blank tile
+    if (grid[x][y].value === 0) {
+      //deals with first click of blank tile decreasing the nonMineTiles
+      setNonMineTiles((prevCount) => prevCount--);
+      setGrid((prevGrid) => {
+        let newState = revealLogic(prevGrid, x, y, setNonMineTiles);
+        console.log(newState);
+        return newState;
+      });
     }
 
-    return;
-  }, [gamePlayable]);
+    //only if mine tile
+    if (grid[x][y].value === "X") {
+      //should start 'end game' logics
+      setGamePlayable(false);
+
+      //1.5 sec delay to show mine tile then end game
+      setTimeout(() => {
+        setWinStatus(false);
+        setGameOverMessage(true);
+      }, 1500);
+    }
+
+    console.log(grid);
+  };
 
   return grid.map((singleRow) => {
     return (
