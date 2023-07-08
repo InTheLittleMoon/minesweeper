@@ -10,21 +10,23 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
   //states
   const [grid, setGrid] = useState([]);
   const [gamePlayable, setGamePlayable] = useState(true);
-  const [nonMineTiles, setNonMineTiles] = useState(0);
+  const [nonMineTiles, setNonMineTiles] = useState(null);
 
   //should start game at launch
   useEffect(() => {
-    const newBoard = createBoard(5, 5, 1);
+    //row count, col count, mine count
+    const newBoard = createBoard(4, 3, 1);
     console.log(newBoard);
 
     //should have same values as newBoard args
-    setNonMineTiles(5 * 5 - 1);
+    //NOTE: for some reason, youll need to set the mines as to having been decreased by one more for win logic to trigger
+    setNonMineTiles(4 * 3 - 2);
     console.log(nonMineTiles);
     setGrid(newBoard.board);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //should 'mark' cell when right clicked
+  //should deal with right click
   const flagTile = (event, x, y) => {
     event.preventDefault();
     //checks if game is still playable
@@ -40,7 +42,7 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
     });
   };
 
-  //should deal with left click, changing tile to correct 'mine', 'empty', or 'num' value
+  //should deal with left click
   const revealTile = (x, y) => {
     //checks if game is still playable
     if (gamePlayable === false) {
@@ -53,17 +55,6 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
       return newGrid;
     });
 
-    //only if blank tile
-    if (grid[x][y].value === 0) {
-      //deals with first click of blank tile decreasing the nonMineTiles
-      setNonMineTiles((prevCount) => prevCount--);
-      setGrid((prevGrid) => {
-        let newState = revealLogic(prevGrid, x, y, setNonMineTiles);
-        console.log(newState);
-        return newState;
-      });
-    }
-
     //only if mine tile
     if (grid[x][y].value === "X") {
       //should start 'end game' logics
@@ -74,9 +65,35 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
         setWinStatus(false);
         setGameOverMessage(true);
       }, 1500);
-    }
+    } else {
+      //only if blank tile
+      if (grid[x][y].value === 0) {
+        // deals with first click of blank tile decreasing the nonMineTiles
+        setNonMineTiles((prevCount) => prevCount - 1);
+        console.log(nonMineTiles);
 
-    console.log(grid);
+        setGrid((prevGrid) => {
+          let newGrid = revealLogic(prevGrid, x, y);
+          console.log(newGrid.tileCount);
+          return newGrid.grid;
+        });
+      }
+      //only if num tile
+      else {
+        setNonMineTiles((prevCount) => prevCount - 1);
+        console.log(nonMineTiles);
+      }
+    }
+    if (nonMineTiles === 0) {
+      //should start 'end game' logics
+      setGamePlayable(false);
+
+      //1.5 sec delay to show mine tile then end game
+      setTimeout(() => {
+        setWinStatus(true);
+        setGameOverMessage(true);
+      }, 1500);
+    }
   };
 
   return grid.map((singleRow) => {

@@ -21,6 +21,9 @@ export default function Cell({ tileData, flagTile, revealTile }) {
         console.log(tileData);
       }}
       onClick={() => {
+        if (tileData.revealed) {
+          return;
+        }
         revealTile(tileData.x, tileData.y);
         console.log(tileData);
       }}
