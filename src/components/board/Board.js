@@ -15,13 +15,12 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
   //should start game at launch
   useEffect(() => {
     //row count, col count, mine count
-    const newBoard = createBoard(4, 3, 1);
+    const newBoard = createBoard(3, 3, 3);
     console.log(newBoard);
 
     //should have same values as newBoard args
     //NOTE: for some reason, youll need to set the mines as to having been decreased by one more for win logic to trigger
-    setNonMineTiles(4 * 3 - 2);
-    console.log(nonMineTiles);
+    setNonMineTiles(3 * 3 - 3);
     setGrid(newBoard.board);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -68,13 +67,12 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
     } else {
       //only if blank tile
       if (grid[x][y].value === 0) {
-        // deals with first click of blank tile decreasing the nonMineTiles
-        setNonMineTiles((prevCount) => prevCount - 1);
-        console.log(nonMineTiles);
-
         setGrid((prevGrid) => {
           let newGrid = revealLogic(prevGrid, x, y);
-          console.log(newGrid.tileCount);
+          setNonMineTiles((prevCount) => {
+            let newCount = prevCount - newGrid.tileCount;
+            return newCount;
+          });
           return newGrid.grid;
         });
       }
@@ -84,17 +82,20 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
         console.log(nonMineTiles);
       }
     }
-    if (nonMineTiles === 0) {
-      //should start 'end game' logics
-      setGamePlayable(false);
-
-      //1.5 sec delay to show mine tile then end game
-      setTimeout(() => {
-        setWinStatus(true);
-        setGameOverMessage(true);
-      }, 1500);
-    }
   };
+
+  useEffect(() => {
+    if (nonMineTiles === 0) {
+      console.log("Gets to endgame useEffect: ", nonMineTiles);
+      //should start 'end game' logics
+      // setGamePlayable(false);
+      // //1.5 sec delay to show mine tile then end game
+      // setTimeout(() => {
+      //   setWinStatus(true);
+      //   setGameOverMessage(true);
+      // }, 1500);
+    }
+  }, [nonMineTiles]);
 
   return grid.map((singleRow) => {
     return (
