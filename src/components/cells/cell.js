@@ -4,7 +4,7 @@ import "./Cell.css";
 //images
 import mineIcon from "../../assets/images/mine-icon.png";
 
-export default function Cell({ tileData, flagTile, revealTile }) {
+export default function Cell({ tileData, flagTile, revealTile, nonMineTiles }) {
   return (
     <div
       className={`cell ${
@@ -20,6 +20,7 @@ export default function Cell({ tileData, flagTile, revealTile }) {
         flagTile(event, tileData.x, tileData.y);
       }}
       onClick={() => {
+        console.log(nonMineTiles);
         if (tileData.revealed) {
           return;
         }

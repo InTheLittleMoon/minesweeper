@@ -15,12 +15,11 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
   //should start game at launch
   useEffect(() => {
     //row count, col count, mine count
-    const newBoard = createBoard(3, 2, 1);
+    const newBoard = createBoard(3, 3, 1);
     console.log(newBoard);
 
     //should have same values as newBoard args
-    //NOTE: for some reason, youll need to set the mines as to having been decreased by one more for win logic to trigger
-    setNonMineTiles(3 * 2 - 1);
+    setNonMineTiles(3 * 3 - 1);
     console.log(nonMineTiles);
     setGrid(newBoard.board);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,6 +39,15 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
       newGrid[x][y] = { ...newGrid[x][y], flagged: !newGrid[x][y].flagged };
       return newGrid;
     });
+  };
+
+  const decreaseNonMines = (nonMineCount) => {
+    let temp = nonMineCount;
+    //accounts for blanks inital tile decrement
+    temp++;
+    let currentTiles = nonMineTiles;
+    temp = currentTiles - temp;
+    setNonMineTiles(temp);
   };
 
   //should deal with left click
@@ -68,16 +76,12 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
     } else {
       //only if blank tile
       if (grid[x][y].value === 0) {
-        //should account for blank tile not triggering any other nonminetile decrements
-        let count = 1;
-
         setGrid((prevGrid) => {
           let newGrid = revealLogic(prevGrid, x, y);
-          count = count + newGrid.tileCount;
+          let count = newGrid.tileCount;
+          decreaseNonMines(count);
           return newGrid.grid;
         });
-
-        setNonMineTiles((prevCount) => prevCount - 1);
       }
       //only if num tile
       else {
@@ -91,12 +95,12 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
     if (nonMineTiles === 0) {
       console.log("Gets to endgame useEffect: ", nonMineTiles);
       //should start 'end game' logics
-      // setGamePlayable(false);
-      // //1.5 sec delay to show mine tile then end game
-      // setTimeout(() => {
-      //   setWinStatus(true);
-      //   setGameOverMessage(true);
-      // }, 1500);
+      setGamePlayable(false);
+      //1.5 sec delay to show mine tile then end game
+      setTimeout(() => {
+        setWinStatus(true);
+        setGameOverMessage(true);
+      }, 1500);
     }
   }, [nonMineTiles]);
 
@@ -113,6 +117,7 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
               tileData={tileData}
               flagTile={flagTile}
               revealTile={revealTile}
+              nonMineTiles={nonMineTiles}
             />
           );
         })}
