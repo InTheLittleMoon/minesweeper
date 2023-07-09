@@ -18,14 +18,12 @@ export default function Cell({ tileData, flagTile, revealTile }) {
       }`}
       onContextMenu={(event) => {
         flagTile(event, tileData.x, tileData.y);
-        console.log(tileData);
       }}
       onClick={() => {
         if (tileData.revealed) {
           return;
         }
         revealTile(tileData.x, tileData.y);
-        console.log(tileData);
       }}
     >
       {tileData.revealed !== false &&

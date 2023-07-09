@@ -15,12 +15,13 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
   //should start game at launch
   useEffect(() => {
     //row count, col count, mine count
-    const newBoard = createBoard(3, 3, 3);
+    const newBoard = createBoard(3, 2, 1);
     console.log(newBoard);
 
     //should have same values as newBoard args
     //NOTE: for some reason, youll need to set the mines as to having been decreased by one more for win logic to trigger
-    setNonMineTiles(3 * 3 - 3);
+    setNonMineTiles(3 * 2 - 1);
+    console.log(nonMineTiles);
     setGrid(newBoard.board);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -42,7 +43,7 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
   };
 
   //should deal with left click
-  const revealTile = (x, y) => {
+  const revealTile = async (x, y) => {
     //checks if game is still playable
     if (gamePlayable === false) {
       return;
@@ -67,14 +68,16 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
     } else {
       //only if blank tile
       if (grid[x][y].value === 0) {
+        //should account for blank tile not triggering any other nonminetile decrements
+        let count = 1;
+
         setGrid((prevGrid) => {
           let newGrid = revealLogic(prevGrid, x, y);
-          setNonMineTiles((prevCount) => {
-            let newCount = prevCount - newGrid.tileCount;
-            return newCount;
-          });
+          count = count + newGrid.tileCount;
           return newGrid.grid;
         });
+
+        setNonMineTiles((prevCount) => prevCount - 1);
       }
       //only if num tile
       else {
@@ -95,6 +98,10 @@ export default function Board({ setGameOverMessage, setWinStatus }) {
       //   setGameOverMessage(true);
       // }, 1500);
     }
+  }, [nonMineTiles]);
+
+  useEffect(() => {
+    console.log("Updated nonMineTiles: ", nonMineTiles);
   }, [nonMineTiles]);
 
   return grid.map((singleRow) => {

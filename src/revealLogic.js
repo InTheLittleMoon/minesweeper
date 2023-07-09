@@ -165,7 +165,6 @@ export default function RevealLogic(grid, x, y) {
       tileCount++;
     }
   }
-
   console.log(tileCount);
   return { grid, tileCount };
 }
